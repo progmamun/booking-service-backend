@@ -4,6 +4,7 @@ import globalErrorHandler from './app/middlewares/globalErrorHandler';
 import routes from './app/routes';
 import cookieParser from 'cookie-parser';
 import { NotFoundHandler } from './errors/NotFoundHandler';
+import fileUpload from 'express-fileupload';
 
 const app: Application = express();
 
@@ -16,6 +17,7 @@ app.use(
 app.use(cookieParser());
 
 //parser
+app.use(fileUpload());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
