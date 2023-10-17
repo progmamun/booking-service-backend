@@ -9,6 +9,7 @@ import {
   blogRoutes,
   faqRoutes,
 } from '../modules/contectManagement/content.routes';
+import { feedbackRoutes } from '../modules/feedback/feedback.routes';
 
 const router = express.Router();
 
@@ -44,6 +45,10 @@ const moduleRoutes = [
   {
     path: '/content/blog',
     route: blogRoutes,
+  },
+  {
+    path: '/feedback',
+    route: feedbackRoutes,
   },
 ];
 
