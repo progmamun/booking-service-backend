@@ -4,6 +4,11 @@ import { AuthRoutes } from '../modules/auth/auth.route';
 import { serviceRoutes } from '../modules/service/service.routes';
 import { roomRoutes } from '../modules/rooms/rooms.routes';
 import { bookingRoutes } from '../modules/booking/booking.routes';
+import {
+  aboutUsRoutes,
+  blogRoutes,
+  faqRoutes,
+} from '../modules/contectManagement/content.routes';
 
 const router = express.Router();
 
@@ -27,6 +32,18 @@ const moduleRoutes = [
   {
     path: '/booking',
     route: bookingRoutes,
+  },
+  {
+    path: '/content/aboutus',
+    route: aboutUsRoutes,
+  },
+  {
+    path: '/content/faq',
+    route: faqRoutes,
+  },
+  {
+    path: '/content/blog',
+    route: blogRoutes,
   },
 ];
 
