@@ -1,49 +1,48 @@
-import { JwtPayload, Secret } from "jsonwebtoken";
-import config from "../../../config";
+import bcrypt from 'bcrypt';
+import { JwtPayload, Secret } from 'jsonwebtoken';
+import config from '../../../config';
+
 import {
   IChangePassword,
   ILoginUser,
   ILoginUserResponse,
   IRefreshTokenResponse,
-} from "./auth.interface";
-import User from "../user/user.model";
-import { jwtHelpers } from "../../../helpers/jwtHelpers";
-import ApiError from "../../../errors/Apierror";
-import httpStatus from "http-status";
+} from './auth.interface';
+import User from '../user/user.model';
+import { jwtHelpers } from '../../../helpers/jwtHelpers';
+import ApiError from '../../../errors/Apierror';
+import httpStatus from 'http-status';
 
 const loginUser = async (payload: ILoginUser): Promise<ILoginUserResponse> => {
   const { email, password } = payload;
 
-  // const isUserExist = await User.isUserExist(email);
-  const isUserExist = await User.findOne({ email });
-
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const isUserExist: any = await User.findOne({ email });
   if (!isUserExist) {
-    throw new ApiError(httpStatus.NOT_FOUND, "User does not exist");
+    throw new ApiError(httpStatus.NOT_FOUND, 'user not found');
   }
-
-  if (
-    isUserExist.password &&
-    !(await User.isPasswordMatched(password, isUserExist.password))
-  ) {
-    throw new ApiError(httpStatus.BAD_REQUEST, "Password is incorrect");
+  const matchedPassword = await bcrypt.compare(password, isUserExist?.password);
+  if (!matchedPassword) {
+    throw new ApiError(httpStatus.BAD_GATEWAY, 'password is incorrect');
   }
 
   //create access token & refresh token
-  // console.log("role", isUserExist?.role);
+
   const { _id: userId, role: role } = isUserExist;
   const accessToken = jwtHelpers.createToken(
     { userId, role, email },
     config.jwt.secret as Secret,
-    config.jwt.expires_in as string
+    config.jwt.expires_in as string,
   );
   //Create refresh token
   const refreshToken = jwtHelpers.createToken(
     { userId, role, email },
     config.jwt.refresh_secret as Secret,
-    config.jwt.refresh_expires_in as string
+    config.jwt.refresh_expires_in as string,
   );
 
   return {
+    data: isUserExist,
     accessToken,
     refreshToken,
   };
@@ -56,21 +55,20 @@ const refreshToken = async (token: string): Promise<IRefreshTokenResponse> => {
   try {
     verifiedToken = jwtHelpers.verifyToken(
       token,
-      config.jwt.refresh_secret as Secret
+      config.jwt.refresh_secret as Secret,
     );
   } catch (err) {
-    throw new ApiError(httpStatus.BAD_REQUEST, "Invalid Refresh Token");
+    throw new ApiError(httpStatus.BAD_REQUEST, 'Invalid Refresh Token');
   }
 
   const { userId } = verifiedToken;
 
   // checking deleted user's refresh token
-
   const isUserExist = await User.isUserExist(userId);
   if (!isUserExist) {
-    throw new ApiError(httpStatus.NOT_FOUND, "User does not exist");
+    throw new ApiError(httpStatus.NOT_FOUND, 'User does not exist');
   }
-  
+
   //generate new token
   const newAccessToken = jwtHelpers.createToken(
     {
@@ -78,7 +76,7 @@ const refreshToken = async (token: string): Promise<IRefreshTokenResponse> => {
       role: isUserExist.role,
     },
     config.jwt.secret as Secret,
-    config.jwt.expires_in as string
+    config.jwt.expires_in as string,
   );
 
   return {
@@ -89,20 +87,20 @@ const refreshToken = async (token: string): Promise<IRefreshTokenResponse> => {
 
 const changePassword = async (
   user: JwtPayload | null,
-  payload: IChangePassword
+  payload: IChangePassword,
 ): Promise<void> => {
   const { oldPassword } = payload;
   const isUserExist = await User.findOne({ id: user?.userId }).select(
-    "+password"
+    '+password',
   );
   if (!isUserExist) {
-    throw new ApiError(httpStatus.NOT_FOUND, "User does not exist");
+    throw new ApiError(httpStatus.NOT_FOUND, 'User does not exist');
   }
   if (
     isUserExist.password &&
     !(await User.isPasswordMatched(oldPassword, isUserExist.password))
   ) {
-    throw new ApiError(httpStatus.BAD_REQUEST, "Old password is incorrect");
+    throw new ApiError(httpStatus.BAD_REQUEST, 'Old password is incorrect');
   }
 
   isUserExist.save();

@@ -1,16 +1,25 @@
-/* eslint-disable no-unused-vars */
-export enum LocationEnum {
-  Alabama = 'Alabama',
-  Alaska = 'Alaska',
-  Arizona = 'Arizona',
-  Arkansas = 'Arkansas',
-  California = 'California',
-  Colorado = 'Colorado',
-  Connecticut = 'Connecticut',
-  Delaware = 'Delaware',
-  Florida = 'Florida',
-  Georgia = 'Georgia',
-}
+export const LocationEnum = [
+  'Alabama',
+  'Alaska',
+  'Arizona',
+  'Arkansas',
+  'California',
+  'Colorado',
+  'Connecticut',
+  'Delaware',
+  'Florida',
+  'Georgia',
+  'Hawaii',
+  'Idaho',
+  'Illinois',
+  'Indiana',
+  'Iowa',
+  'Kansas',
+  'Kentucky',
+  'Louisiana',
+  'Maine',
+  'Maryland',
+];
 
 export const ServiceSearchableFields = ['name', 'location', 'category'];
 export const ServiceFilterableFields = [

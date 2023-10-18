@@ -25,12 +25,18 @@ const ServiceSchema = new Schema(
     },
     category: {
       type: String,
-      enum: ['1 star', '2 star', '3 star', '4 star', '5 star'],
+      enum: [
+        'Standard Room',
+        'Deluxe Room',
+        'Executive Room',
+        'Suite',
+        'Presidential or Royal Suite',
+      ],
     },
     images: [
       {
         url: String,
-        public_id: String,
+        publicLink: String,
       },
     ],
     facilities: [

@@ -28,7 +28,7 @@ const getAllBuildings = catchAsync(async (req: Request, res: Response) => {
   sendResponse<any>(res, {
     statusCode: httpStatus.OK,
     success: true,
-    message: 'get all service successfully',
+    message: 'service retrieved successfully!',
     meta: result.meta,
     data: result.data,
   });
@@ -39,7 +39,7 @@ const getSingleBuilding = catchAsync(async (req: Request, res: Response) => {
   sendResponse<any>(res, {
     statusCode: httpStatus.OK,
     success: true,
-    message: 'get single service successfully',
+    message: 'service retrieved successfully',
     data: result,
   });
 });

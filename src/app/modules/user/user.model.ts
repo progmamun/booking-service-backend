@@ -1,9 +1,10 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { Schema, model } from "mongoose";
 import { IUser, UserModel } from "./user.interface";
 import bcrypt from "bcrypt";
 import config from "../../../config";
 
-const UserSchema = new Schema<IUser, UserModel>(
+const UserSchema = new Schema<any, UserModel>(
   {
     name: {
       type: String,
@@ -51,19 +52,19 @@ const UserSchema = new Schema<IUser, UserModel>(
       enum: ["user", "admin", "super_admin"],
       default: "user",
     },
-    preferences: {
-      nationality: {
-        type: String,
-      },
 
-      language: {
-        type: String,
-      },
-      address: {
-        type: String,
-      },
+    nationality: {
+      type: String,
+    },
+
+    language: {
+      type: String,
+    },
+    address: {
+      type: String,
     },
   },
+
   {
     timestamps: true,
     toJSON: {
@@ -78,7 +79,8 @@ const UserSchema = new Schema<IUser, UserModel>(
 
 // Create a unique index for phoneNumber field
 // Check if User exists
-UserSchema.statics.isUserExist = async function (
+
+UserSchema.methods.isUserExist = async function (
   email: string
 ): Promise<Pick<IUser, "_id" | "password" | "phoneNumber" | "role"> | null> {
   return await User.findOne(
@@ -94,7 +96,7 @@ UserSchema.statics.isUserExist = async function (
 };
 
 // Check password match
-UserSchema.statics.isPasswordMatched = async function (
+UserSchema.methods.isPasswordMatched = async function (
   givenPassword: string,
   savedPassword: string
 ): Promise<boolean> {

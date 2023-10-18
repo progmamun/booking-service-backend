@@ -1,13 +1,35 @@
+// import bcrypt from "bcrypt";
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
-import { SortOrder } from 'mongoose';
-import ApiError from '../../../errors/Apierror';
-import { paginationHelpers } from '../../../helpers/paginationHelper';
-import { IPaginationOptions } from '../../../interfaces/paginations';
-import { IUser } from './user.interface';
-import User from './user.model';
+import { SortOrder } from "mongoose";
+import ApiError from "../../../errors/Apierror";
+import { paginationHelpers } from "../../../helpers/paginationHelper";
+import { IPaginationOptions } from "../../../interfaces/paginations";
+import { IUser } from "./user.interface";
+import User from "./user.model";
+import httpStatus from "http-status";
+// import config from "../../../config";
 
 const createUser = async (userData: IUser): Promise<IUser | null> => {
+  const { email, phoneNumber } = userData;
+  const findDuplicateEmail = await User.findOne({ email: email });
+  if (findDuplicateEmail) {
+    throw new ApiError(
+      httpStatus.BAD_REQUEST,
+      "user already exist with this email  try different one !"
+    );
+  }
+  const findDuplicatePhone = await User.findOne({ phoneNumber: phoneNumber });
+  if (findDuplicatePhone) {
+    throw new ApiError(
+      httpStatus.BAD_REQUEST,
+      "user already exist with this phone try different One!"
+    );
+  }
+  // userData.password = await bcrypt.hash(
+  //   userData?.password,
+  //   Number(config.bcrypt_salt_rounds)
+  // );
   const newUser = await User.create(userData);
 
   return newUser;
@@ -21,7 +43,7 @@ const getAllUsers = async (
     paginationHelpers.calculatePagination(paginationOptions);
   const query: any = {};
 
-  if (payload.email) query.email = { $regex: payload.email, $options: 'i' };
+  if (payload.email) query.email = { $regex: payload.email, $options: "i" };
   const sortConditions: { [key: string]: SortOrder } = {};
   if (sortBy && sortOrder) {
     sortConditions[sortBy] = sortOrder;
@@ -41,38 +63,38 @@ const getAllUsers = async (
   };
 };
 const getSingleUser = async (id: string): Promise<IUser | null> => {
-  const result = await User.findById({ _id: id });
-
+  const result = await User.findOne({ _id: id });
+  console.log(result);
   return result;
 };
 
 const updateUser = async (
   id: string,
-  payload: Partial<IUser>
-): Promise<IUser | null> => {
+  payload: Partial<any>
+): Promise<any | null> => {
   const isExist = await User.findOne({ _id: id });
 
   if (!isExist) {
-    throw new ApiError(404, 'User not found !');
+    throw new ApiError(404, "User not found !");
   }
 
   const { role, ...UserData } = payload;
-
-  const updatedUserData: Partial<IUser> = { ...UserData };
+  console.log(payload);
   if (role) {
     throw new ApiError(
       500,
-      'something went wrong. you cannot update your role'
+      "something went wrong. you cannot update your role"
     );
   }
 
-  const result = await User.findOneAndUpdate({ _id: id }, updatedUserData, {
+  const result = await User.findOneAndUpdate({ _id: id }, UserData, {
     new: true,
   });
+  console.log("result", result);
   return result;
 };
 const deleteUser = async (id: string): Promise<IUser | null> => {
-  const result = await User.findByIdAndDelete(id);
+  const result = await User.findOneAndDelete({ _id: id });
 
   return result;
 };
@@ -84,9 +106,9 @@ const manageRole = async (payload: any, id: string) => {
     {
       $set: {
         role:
-          (role === 'admin' && 'admin') ||
-          (role === 'super_admin' && 'super_admin') ||
-          (role === 'user' && 'user'),
+          (role === "admin" && "admin") ||
+          (role === "super_admin" && "super_admin") ||
+          (role === "user" && "user"),
       },
     },
     {

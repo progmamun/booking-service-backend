@@ -12,7 +12,7 @@ app.use(
   cors({
     origin: '*',
     credentials: true,
-  })
+  }),
 );
 app.use(cookieParser());
 
@@ -26,7 +26,7 @@ app.use('/api/v1', routes);
 
 // root route
 app.get('/', (req: Request, res: Response) => {
-  res.send('Car server is running..');
+  res.send('Booking Management server is running...!');
 });
 
 //global error handler

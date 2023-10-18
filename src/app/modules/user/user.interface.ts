@@ -1,5 +1,6 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable no-unused-vars */
-import { Model } from 'mongoose';
+import { Model } from "mongoose";
 
 // export type UserName = {
 //   firstName: string;
@@ -17,11 +18,13 @@ export type IUser = {
   dob?: string;
   gender?: string;
   profileImg?: string;
-  preferences: {
-    Language?: string;
-    nationality?: string;
-  };
+
+  Language?: string;
+  nationality?: string;
+
   cart?: string[];
+
+  // test: Types.ObjectId | ITest
 };
 
 export type IUserResponse = {
@@ -35,9 +38,10 @@ export type IUserResponse = {
 export type UserModel = {
   isUserExist(
     email: string
-  ): Promise<Pick<IUser, '_id' | 'email' | 'password' | 'role'>>;
+  ): Promise<Pick<IUser, "_id" | "email" | "password" | "role">>;
   isPasswordMatched(
     givenPassword: string,
     savedPassword: string
   ): Promise<boolean>;
+  findDuplicateEmail(email: string): Promise<any>;
 } & Model<IUser>;

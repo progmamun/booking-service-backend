@@ -17,6 +17,7 @@ const createBooking = catchAsync(async (req: Request, res: Response) => {
     data: result,
   });
 });
+
 const getallBooking = catchAsync(async (req: Request, res: Response) => {
   const paginationOptions = pick(req.query, paginationFields);
 
@@ -99,11 +100,12 @@ const updateRoomBookingScheduling = catchAsync(
     sendResponse<any>(res, {
       statusCode: httpStatus.OK,
       success: true,
-      message: 'room booking status reset  successfully',
+      message: 'room booking status reset successfully',
       data: result,
     });
   },
 );
+
 export const bookingControllers = {
   createBooking,
   getallBooking,
